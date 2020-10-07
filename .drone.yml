@@ -8,10 +8,10 @@ steps:
   commands:
     - git submodule update --init --recursive --remote
 # Create Docker image from WAR file and push to HDAP Docker registry
-- name: create_docker_image_forte-fhir-mapper
+- name: create_docker_image_raven-mapper-api
   image: plugins/docker
   settings:
-    repo: gt-build.hdap.gatech.edu/forte-fhir-mapper
+    repo: gt-build.hdap.gatech.edu/raven-mapper-api
     context: .
     dockerfile: ./Dockerfile
 
