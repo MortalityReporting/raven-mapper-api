@@ -56,9 +56,9 @@ For an example csv, the project has attached at the top level ```ConnectathonTes
 To use the exporting tool, you must make a REST request to the ```/submitEDRS``` endpoint
 ### /submitEDRS parameters
 
-* '''endpointURL''': A url definition of a receiving EDRS system
-* '''endpointMode''': A workflow mode of submitting, based on receiving system. 3 systems are supported right now: "Nightingale", "Axiell", and "Vitalcheck".
-* '''systemIdentifier''': A patient identifier system within the fhir system for the patient to be submitted. Works with ```codeIdentifier``` to define a full patient identifier.
-* '''codeIdentifier''': A patient identifier code within the fhir system for the patient to be submitted. Works with ```systemIdentifier``` to define a full patient identifier.
+* `endpointURL`: A url definition of a receiving EDRS system
+* `endpointMode`: A workflow mode of submitting, based on receiving system. 3 systems are supported right now: "Nightingale", "Axiell", and "Vitalcheck".
+* `systemIdentifier`: A patient identifier system within the fhir system for the patient to be submitted. Works with `codeIdentifier` to define a full patient identifier.
+* `codeIdentifier`: A patient identifier code within the fhir system for the patient to be submitted. Works with `systemIdentifier` to define a full patient identifier.
 
 If no parameters are supplied then the configuration endpoints are used instead, as discussed in the configuration section
