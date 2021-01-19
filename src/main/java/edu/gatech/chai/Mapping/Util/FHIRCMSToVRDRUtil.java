@@ -2,7 +2,7 @@ package edu.gatech.chai.Mapping.Util;
 
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 
-import edu.gatech.VRDR.model.DeathCertificateDocument;
+import edu.gatech.chai.VRDR.model.DeathCertificateDocument;
 
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;

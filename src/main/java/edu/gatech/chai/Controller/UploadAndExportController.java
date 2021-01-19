@@ -40,7 +40,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 
-import edu.gatech.VRDR.model.DeathCertificateDocument;
+import edu.gatech.chai.VRDR.model.DeathCertificateDocument;
 import edu.gatech.chai.MDI.Model.MDIModelFields;
 import edu.gatech.chai.Mapping.Service.CanaryValidationService;
 import edu.gatech.chai.Mapping.Service.FhirCMSToVRDRService;

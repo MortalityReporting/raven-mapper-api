@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 
 import org.hl7.fhir.r4.model.CodeableConcept;
 
-import edu.gatech.VRDR.model.util.CommonUtil;
+import edu.gatech.chai.VRDR.model.util.CommonUtil;
 
 public class CommonMappingUtil {
 	public static String trueValueRegex = "yes|true|y";

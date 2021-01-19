@@ -41,8 +41,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import edu.gatech.VRDR.context.VRDRFhirContext;
-import edu.gatech.VRDR.model.DeathCertificateDocument;
+import edu.gatech.chai.VRDR.context.VRDRFhirContext;
+import edu.gatech.chai.VRDR.model.DeathCertificateDocument;
 import edu.gatech.chai.Mapping.Util.FHIRCMSToVRDRUtil;
 
 @Service

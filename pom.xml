@@ -33,7 +33,7 @@
     <dependency>
     	<groupId>edu.gatech</groupId>
     	<artifactId>VRDR</artifactId>
-    	<version>v0.1.8-R4</version>
+    	<version>v1.0.1-R4</version>
     </dependency>
     <!-- <dependency>
 		<groupId>org.springframework.boot</groupId>

@@ -43,26 +43,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ca.uhn.fhir.parser.IParser;
-import edu.gatech.VRDR.context.VRDRFhirContext;
-import edu.gatech.VRDR.model.AutopsyPerformedIndicator;
-import edu.gatech.VRDR.model.CauseOfDeathCondition;
-import edu.gatech.VRDR.model.CauseOfDeathPathway;
-import edu.gatech.VRDR.model.Certifier;
-import edu.gatech.VRDR.model.ConditionContributingToDeath;
-import edu.gatech.VRDR.model.DeathCertificate;
-import edu.gatech.VRDR.model.DeathDate;
-import edu.gatech.VRDR.model.DeathLocation;
-import edu.gatech.VRDR.model.Decedent;
-import edu.gatech.VRDR.model.DecedentAge;
-import edu.gatech.VRDR.model.DecedentDispositionMethod;
-import edu.gatech.VRDR.model.DecedentUsualWork;
-import edu.gatech.VRDR.model.DispositionLocation;
-import edu.gatech.VRDR.model.ExaminerContacted;
-import edu.gatech.VRDR.model.InjuryIncident;
-import edu.gatech.VRDR.model.InjuryLocation;
-import edu.gatech.VRDR.model.MannerOfDeath;
-import edu.gatech.VRDR.model.util.CommonUtil;
-import edu.gatech.VRDR.model.util.InjuryIncidentUtil;
+import edu.gatech.chai.VRDR.context.VRDRFhirContext;
+import edu.gatech.chai.VRDR.model.AutopsyPerformedIndicator;
+import edu.gatech.chai.VRDR.model.CauseOfDeathCondition;
+import edu.gatech.chai.VRDR.model.CauseOfDeathPathway;
+import edu.gatech.chai.VRDR.model.Certifier;
+import edu.gatech.chai.VRDR.model.ConditionContributingToDeath;
+import edu.gatech.chai.VRDR.model.DeathCertificate;
+import edu.gatech.chai.VRDR.model.DeathDate;
+import edu.gatech.chai.VRDR.model.DeathLocation;
+import edu.gatech.chai.VRDR.model.Decedent;
+import edu.gatech.chai.VRDR.model.DecedentAge;
+import edu.gatech.chai.VRDR.model.DecedentDispositionMethod;
+import edu.gatech.chai.VRDR.model.DecedentUsualWork;
+import edu.gatech.chai.VRDR.model.DispositionLocation;
+import edu.gatech.chai.VRDR.model.ExaminerContacted;
+import edu.gatech.chai.VRDR.model.InjuryIncident;
+import edu.gatech.chai.VRDR.model.InjuryLocation;
+import edu.gatech.chai.VRDR.model.MannerOfDeath;
+import edu.gatech.chai.VRDR.model.util.CommonUtil;
+import edu.gatech.chai.VRDR.model.util.InjuryIncidentUtil;
 import edu.gatech.chai.MDI.Model.MDIModelFields;
 import edu.gatech.chai.Mapping.Util.CommonMappingUtil;
 import edu.gatech.chai.Mapping.Util.MDIToFhirCMSUtil;
@@ -440,7 +440,7 @@ public class MDIToFhirCMSService {
 		}
 		if(inputFields.ATWORK !=  null && !inputFields.ATWORK.isEmpty()) {
 			boolean atWork = CommonMappingUtil.parseBoolean(inputFields.ATWORK);
-			returnIncident.addInjuredAtWorkBooleanComponent(CommonMappingUtil.parseBooleanAndCreateCode(inputFields.ATWORK));
+			returnIncident.addInjuredAtWorkComponent(CommonMappingUtil.parseBooleanAndCreateCode(inputFields.ATWORK));
 			if(inputFields.JOBRELATED !=  null && !inputFields.JOBRELATED.isEmpty()) {
 				//Search for the atWork component we just made
 				for (ObservationComponentComponent component: returnIncident.getComponent()) {
