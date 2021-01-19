@@ -33,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -45,7 +46,7 @@ import edu.gatech.VRDR.model.DeathCertificateDocument;
 import edu.gatech.chai.Mapping.Util.FHIRCMSToVRDRUtil;
 
 @Service
-public class VitalcheckSubmissionService {
+public class VitalcheckSubmissionService{
 	private RestTemplate restTemplate;
 	private ObjectMapper objectMapper;
 	@Autowired
@@ -61,7 +62,7 @@ public class VitalcheckSubmissionService {
 		this.vrdrFhirContext = vrdrFhirContext;
 	}
 	
-	public ResponseEntity<String> submitRecord(String POSTendpoint, DeathCertificateDocument dcd) throws IOException {
+	public ResponseEntity<String> submitRecord(String POSTendpoint, DeathCertificateDocument dcd) throws RestClientException, IOException{
 		//Setup basic authentication to get token from token server
 		String staticVitalCheckTokenBearerEndpoint = "https://fhirtest.centralus.cloudapp.azure.com/IdentityServerNM/connect/token?daveuser=examiner&bucode=STATE_ME_OFFICE_OFFICE_OF_MEDICAL_INVESTIGATOR";
 		String tokenAccessClientId = "client";
@@ -80,12 +81,7 @@ public class VitalcheckSubmissionService {
 		HttpEntity<String> entity = new HttpEntity<String>(requestBodyString, headers);
 		//Request
 		ResponseEntity<String> tokenResponseEntity = null;
-		try{
-			tokenResponseEntity = restTemplate.postForEntity(staticVitalCheckTokenBearerEndpoint, entity, String.class);
-		}
-		catch(HttpClientErrorException e) {
-			throw new IOException("Error obtaining access token to vitalcheck system:" + e.getResponseBodyAsString());
-		}
+		tokenResponseEntity = restTemplate.postForEntity(staticVitalCheckTokenBearerEndpoint, entity, String.class);
 		String tokenResponse = tokenResponseEntity.getBody();
 		//Read token
 		JsonNode tokenResponseJson = objectMapper.readTree(tokenResponse);

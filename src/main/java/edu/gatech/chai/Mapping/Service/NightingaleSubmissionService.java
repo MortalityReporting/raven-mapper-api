@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -20,7 +21,7 @@ public class NightingaleSubmissionService {
 		this.restTemplate = new RestTemplate();
 	}
 	
-	public ResponseEntity<String> submitRecord(String POSTendpoint, String VRDRJson) {
+	public ResponseEntity<String> submitRecord(String POSTendpoint, String VRDRJson) throws RestClientException{
 		System.out.println("Submitting to nightingale at endpoint:" + POSTendpoint);
 		ResponseEntity<String> POSTresponse
 		  = restTemplate.postForEntity(POSTendpoint, VRDRJson, String.class);

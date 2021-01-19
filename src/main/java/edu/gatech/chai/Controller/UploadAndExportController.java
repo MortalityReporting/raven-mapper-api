@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -191,28 +192,25 @@ public class UploadAndExportController {
     //Check the database for an entity using the repository. If exists, grab it
     //For each source from configuration, check to see the status. If not sent, then make a new source and send
     
-    
     @GetMapping("submitEDRS2.0")
-    public ResponseEntity<JsonNode> submitEDRSRecord20(@RequestParam(required = false) String systemIdentifier,@RequestParam(required = false) String codeIdentifier,
-    		@RequestParam(defaultValue = "false") boolean createOnly) throws IOException {
+    public ResponseEntity<JsonNode> submitEDRSRecord20(@RequestParam(required = true) String systemIdentifier,@RequestParam(required = true) String codeIdentifier) throws IOException {
     	ObjectMapper mapper = new ObjectMapper();
-    	if(systemIdentifier == null || codeIdentifier == null) {
-    		Iterable<PatientSubmit> repoEntity = patientSubmitRepository.findAll();
-    		JsonNode jsonOutput = mapper.valueToTree(repoEntity);
-    		HttpHeaders responseHeaders = new HttpHeaders();
-    	    responseHeaders.set("Content-Type", "application/json");
-    		ResponseEntity<JsonNode> returnResponse = new ResponseEntity<JsonNode>(jsonOutput, responseHeaders, HttpStatus.OK);
-
-    		return returnResponse;
-    	}
+//    	if(systemIdentifier == null || codeIdentifier == null) {
+//    		Iterable<PatientSubmit> repoEntity = patientSubmitRepository.findAll();
+//    		JsonNode jsonOutput = mapper.valueToTree(repoEntity);
+//    		HttpHeaders responseHeaders = new HttpHeaders();
+//    	    responseHeaders.set("Content-Type", "application/json");
+//    		ResponseEntity<JsonNode> returnResponse = new ResponseEntity<JsonNode>(jsonOutput, responseHeaders, HttpStatus.OK);
+//    		return returnResponse;
+//    	}
     	//Create Death Certificate
     	DeathCertificateDocument dcd = null;
 		try {
-			dcd = fhirCMSToVRDRService.createDCDFromBaseFhirServer(systemIdentifier, codeIdentifier);
+			dcd = (DeathCertificateDocument) fhirCMSToVRDRService.pullDCDFromBaseFhirServer(systemIdentifier, codeIdentifier);
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<JsonNode>((JsonNode)mapper.valueToTree(e1.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
     	String VRDRJson = fhirCMSToVRDRService.getJsonParser().encodeResourceToString(dcd);
 		String XMLJson = fhirCMSToVRDRService.getXmlParser().encodeResourceToString(dcd);
@@ -247,22 +245,34 @@ public class UploadAndExportController {
 			if(source.getStatus() == Status.completed) {
 				continue;
 			}
-			if(sourcemode.equalsIgnoreCase("nightingale")) {
-				source = handleNightingaleSubmission(sourceurl, dcd, source);
+			try {
+				if(sourcemode.equalsIgnoreCase("nightingale")) {
+					source = handleNightingaleSubmission(sourceurl, dcd, source);
+				}
+				else if(sourcemode.equalsIgnoreCase("vitalcheck")) {
+					source = handleVitalCheckSubmission(sourceurl, dcd, source);
+				}
 			}
-			else if(sourcemode.equalsIgnoreCase("vitalcheck")) {
-				source = handleVitalCheckSubmission(sourceurl, dcd, source);
+			catch(RestClientException | IOException e) {
+				source.addError("Request Error:" + e.getClass().getName() + ", " + e.getMessage());
 			}
 		}
 		patientSubmitRepository.save(submitEntity);
-		JsonNode jsonOutput = mapper.valueToTree(submitEntity);
+		return submissionStatus(systemIdentifier,codeIdentifier);
+    }
+    
+    @GetMapping("submitstatus")
+    public ResponseEntity<JsonNode> submissionStatus(@RequestParam(required = true) String systemIdentifier,@RequestParam(required = true) String codeIdentifier){
+    	ObjectMapper mapper = new ObjectMapper();
+    	List<PatientSubmit> patientSubmitList = patientSubmitRepository.findByPatientIdentifierSystemAndPatientIdentifierCode(systemIdentifier, codeIdentifier);
+    	JsonNode jsonOutput = mapper.valueToTree(patientSubmitList);
 		HttpHeaders responseHeaders = new HttpHeaders();
 	    responseHeaders.set("Content-Type", "application/json");
 		ResponseEntity<JsonNode> returnResponse = new ResponseEntity<JsonNode>(jsonOutput, HttpStatus.OK);
 		return returnResponse;
     }
     
-    private SourceStatus handleNightingaleSubmission(String sourceurl, DeathCertificateDocument dcd, SourceStatus source) throws IOException {
+    private SourceStatus handleNightingaleSubmission(String sourceurl, DeathCertificateDocument dcd, SourceStatus source) throws RestClientException, IOException {
     	if(source == null) {
     		source = new SourceStatus(sourceurl);
     	}
@@ -293,7 +303,7 @@ public class UploadAndExportController {
 		return source;
     }
     
-    private SourceStatus handleVitalCheckSubmission(String sourceurl, DeathCertificateDocument dcd, SourceStatus source) throws IOException {
+    private SourceStatus handleVitalCheckSubmission(String sourceurl, DeathCertificateDocument dcd, SourceStatus source) throws RestClientException, IOException {
     	if(source == null) {
     		source = new SourceStatus(sourceurl);
     	}

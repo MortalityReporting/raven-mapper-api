@@ -329,11 +329,11 @@ public class MDIToFhirCMSService {
 				martialCoding.setCode("D");
 				martialCoding.setDisplay("Divorced");
 			}
-			else if(MDIToFhirCMSUtil.containsIgnoreCase(inputFields.MARITAL, "Interlocut")) {
+			else if(MDIToFhirCMSUtil.containsIgnoreCase(inputFields.MARITAL, "Interlocutory")) {
 				martialCoding.setCode("I");
 				martialCoding.setDisplay("Interlocutory");
 			}
-			else if(MDIToFhirCMSUtil.containsIgnoreCase(inputFields.MARITAL, "Never Polygamous")) {
+			else if(MDIToFhirCMSUtil.containsIgnoreCase(inputFields.MARITAL, "Polygamous")) {
 				martialCoding.setCode("P");
 				martialCoding.setDisplay("Polygamous");
 			}

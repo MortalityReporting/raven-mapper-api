@@ -36,6 +36,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.oracle.tools.packager.Log;
 
 import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.client.api.IClientInterceptor;
@@ -146,6 +147,48 @@ public class FhirCMSToVRDRService {
 				client.update().resource(composition).execute();
 			}
 		}
+	}
+	
+	public DeathCertificateDocument pullDCDFromBaseFhirServer(String patientIdentifierSystem, String patientIdentifierCode) throws Exception {
+		Bundle patientBundle = client.search()
+				.forResource(Patient.class)
+				.where(Patient.IDENTIFIER.exactly().systemAndCode(patientIdentifierSystem, patientIdentifierCode))
+				.returnBundle(Bundle.class)
+				.execute();
+		Patient patient = null;
+		if(patientBundle.getEntryFirstRep().getResource() != null) {
+			patient = (Patient)patientBundle.getEntryFirstRep().getResource();
+		}
+		else {
+			throw new Exception("Patient not found in cms");
+		}
+		//Find the Death Certificate Composition in the system if it allready exists
+		Bundle compositionBundle = client.search()
+		.forResource(Composition.class)
+		.where(Composition.PATIENT.hasId(patient.getIdElement().getIdPart()))
+		.returnBundle(Bundle.class)
+		.execute();
+		if(!compositionBundle.hasEntry()) {
+			throw new Exception("Patient resource has no composition resources associated to them");
+		}
+		for(BundleEntryComponent bec:compositionBundle.getEntry()) {
+			Composition currentComposition = (Composition)bec.getResource();
+			if(FHIRCMSToVRDRUtil.codeableConceptsEqual(DeathCertificateUtil.typeFixedValue,currentComposition.getType())){
+				Parameters outParams = client.operation()
+						.onInstance(currentComposition.getIdElement())
+						.named("document")
+						.withNoParameters(Parameters.class)
+						.preferResponseType(Bundle.class)
+						.execute();
+				ParametersParameterComponent ppc = outParams.getParameterFirstRep();
+				if(ppc == null) {
+					throw new Exception("VRDR document not found in cms");
+				}
+				DeathCertificateDocument dcd = (DeathCertificateDocument)ppc.getResource();
+				return dcd;
+			}
+		}
+		throw new Exception("Patient has compositions but no VRDR composition found");
 	}
 	
 	public DeathCertificateDocument createDCDFromBaseFhirServer(String patientIdentifierSystem, String patientIdentifierCode) throws Exception {
