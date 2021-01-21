@@ -252,6 +252,7 @@ public class MDIToFhirCMSService {
 	
 	private Decedent createDecedent(MDIModelFields inputFields) throws ParseException {
 		Decedent returnDecedent = new Decedent();
+		CommonUtil.setUUID(returnDecedent);
 		Stream<String> caseIdFields = Stream.of(inputFields.SYSTEMID,inputFields.CASEID);
 		if(!caseIdFields.allMatch(x -> x == null || x.isEmpty())) {
 			Identifier identifier = new Identifier().setSystem(inputFields.SYSTEMID);
@@ -393,19 +394,21 @@ public class MDIToFhirCMSService {
 	}
 	
 	private DecedentAge createDecedentAge(MDIModelFields inputFields, Reference decedentReference) {
-		DecedentAge returnObservation = new DecedentAge();
-		returnObservation.setSubject(decedentReference);
+		DecedentAge returnDecedentAge = new DecedentAge();
+		CommonUtil.setUUID(returnDecedentAge);
+		returnDecedentAge.setSubject(decedentReference);
 		Quantity ageQuantity = new Quantity();
 		ageQuantity.setValue(new BigDecimal(inputFields.AGE)); //TODO: Check valid decimal
 		ageQuantity.setUnit(inputFields.AGEUNIT); //TODO: Check to make sure it's in system
 		ageQuantity.setSystem("http://unitsofmeasure.org");
 		ageQuantity.setCode(MDIToFhirCMSUtil.convertUnitOfMeasureStringToCode(inputFields.AGEUNIT));
-		returnObservation.setValue(ageQuantity);
-		return returnObservation;
+		returnDecedentAge.setValue(ageQuantity);
+		return returnDecedentAge;
 	}
 	
 	private DecedentUsualWork createDecedentEmploymentHistory(MDIModelFields inputFields, Reference decedentReference) {
 		DecedentUsualWork returnEmploymentHistory = new DecedentUsualWork();
+		CommonUtil.setUUID(returnEmploymentHistory);
 		returnEmploymentHistory.setSubject(decedentReference);
 		if(inputFields.JOBTITLE != null && !inputFields.JOBTITLE.isEmpty()) {
 			CodeableConcept usualOccupation = new CodeableConcept();
@@ -422,6 +425,7 @@ public class MDIToFhirCMSService {
 	
 	private Certifier createCertifier(MDIModelFields inputFields) {
 		Certifier returnCertifier = new Certifier();
+		CommonUtil.setUUID(returnCertifier);
 		if(inputFields.CERTIFIER_NAME != null && !inputFields.CERTIFIER_NAME.isEmpty()) {
 			HumanName certName = MDIToFhirCMSUtil.parseHumanName(inputFields.CERTIFIER_NAME);
 			returnCertifier.addName(certName);
@@ -434,6 +438,7 @@ public class MDIToFhirCMSService {
 	
 	private InjuryIncident createInjuryIncident(MDIModelFields inputFields, Reference decedentReference, Location injuryLocation) throws ParseException {
 		InjuryIncident returnIncident = new InjuryIncident();
+		CommonUtil.setUUID(returnIncident);
 		returnIncident.setSubject(decedentReference);
 		if(injuryLocation != null) {
 			returnIncident.addPatientLocationExtension(injuryLocation);
@@ -481,6 +486,7 @@ public class MDIToFhirCMSService {
 	
 	private CauseOfDeathPathway createCauseOfDeathPathway(MDIModelFields inputFields, Bundle bundle, Reference decedentReference, Certifier certifier) {
 		CauseOfDeathPathway returnCoDPathway = new CauseOfDeathPathway();
+		CommonUtil.setUUID(returnCoDPathway);
 		returnCoDPathway.setSubject(decedentReference);
 		if (certifier != null) {
 			Reference certifierReference = new Reference();
@@ -535,6 +541,7 @@ public class MDIToFhirCMSService {
 	
 	private MannerOfDeath createMannerOfDeath(MDIModelFields inputFields, Reference decedentReference, Reference certifierReference) {
 		MannerOfDeath manner = new MannerOfDeath();
+		CommonUtil.setUUID(manner);
 		manner.addPerformer(certifierReference);
 		Coding mannerCoding = new Coding();
 		if(inputFields.MANNER != null && !inputFields.MANNER.isEmpty()) {
@@ -571,6 +578,7 @@ public class MDIToFhirCMSService {
 	
 	private DecedentDispositionMethod createDispositionMethod(MDIModelFields inputFields, Reference decedentReferece) {
 		DecedentDispositionMethod returnDispMethod = new DecedentDispositionMethod();
+		CommonUtil.setUUID(returnDispMethod);
 		if(inputFields.DISPMETHOD != null && !inputFields.DISPMETHOD.isEmpty()) {
 			returnDispMethod.setValue(null, inputFields.DISPMETHOD);
 		}
@@ -582,6 +590,7 @@ public class MDIToFhirCMSService {
 	
 	private DispositionLocation createDispositionLocation(MDIModelFields inputFields, Reference decedentReferece) {
 		DispositionLocation returnDispLocation = new DispositionLocation();
+		CommonUtil.setUUID(returnDispLocation);
 		Address dispAddr = MDIToFhirCMSUtil.createAddress(inputFields.DISP_STREET, inputFields.DISP_CITY, inputFields.DISP_COUNTY, inputFields.DISP_STATE, inputFields.DISP_ZIP);
 		returnDispLocation.setAddress(dispAddr);
 		if(inputFields.DISPPLACE!= null && !inputFields.DISPPLACE.isEmpty()) {
@@ -653,6 +662,7 @@ public class MDIToFhirCMSService {
 	
 	private DocumentReference createCaseNote(String caseNoteString, Reference decedentReference) {
 		DocumentReference caseNote = new DocumentReference();
+		CommonUtil.setUUID(caseNote);
 		caseNote.setType(new CodeableConcept().
 				addCoding(new Coding("http://loinc.org","47046-8","Summary of death note")));
 		caseNote.setSubject(decedentReference);
@@ -669,6 +679,7 @@ public class MDIToFhirCMSService {
 	
 	private ExaminerContacted createExaminerContacted(MDIModelFields inputFields, Reference decedentReference) throws ParseException {
 		ExaminerContacted examinerContacted = new ExaminerContacted(true);
+		CommonUtil.setUUID(examinerContacted);
 		examinerContacted.setSubject(decedentReference);
 		if(inputFields.REPORTDATE != null && !inputFields.REPORTDATE.isEmpty()) {
 			ObservationComponentComponent component = new ObservationComponentComponent();
@@ -685,23 +696,25 @@ public class MDIToFhirCMSService {
 	}
 	
 	private Observation createFoundObs(MDIModelFields inputFields, Reference decedentReference) throws ParseException {
-		Observation returnObs = new Observation();
-		returnObs.setStatus(ObservationStatus.FINAL);
-		returnObs.setSubject(decedentReference);
-		returnObs.setCode(new CodeableConcept().addCoding(new Coding(
+		Observation foundObs = new Observation();
+		CommonUtil.setUUID(foundObs);
+		foundObs.setStatus(ObservationStatus.FINAL);
+		foundObs.setSubject(decedentReference);
+		foundObs.setCode(new CodeableConcept().addCoding(new Coding(
 				"urn:mdi:temporary:code", "1000001", "Date and Time found dead, unconcious and in distress")));
 		if(inputFields.FOUNDDATE != null && !inputFields.FOUNDDATE.isEmpty()) {
 			Date reportDate = MDIToFhirCMSUtil.parseDate(inputFields.FOUNDDATE);
 			if(inputFields.FOUNDTIME != null && !inputFields.FOUNDTIME.isEmpty()) {
 				MDIToFhirCMSUtil.addTimeToDate(reportDate, inputFields.FOUNDTIME);
 			}
-			returnObs.setValue(new DateTimeType(reportDate));
+			foundObs.setValue(new DateTimeType(reportDate));
 		}
-		return returnObs;
+		return foundObs;
 	}
 	
 	private DeathDate createDeathDate(MDIModelFields inputFields, Reference decedentReference, Location location) throws ParseException {
 		DeathDate returnDeathDate = new DeathDate();
+		CommonUtil.setUUID(returnDeathDate);
 		returnDeathDate.setSubject(decedentReference);
 		if(location != null && !location.isEmpty()) {
 			returnDeathDate.addPatientLocationExtension(location);
@@ -738,71 +751,76 @@ public class MDIToFhirCMSService {
 	}
 	
 	private Observation createDateExaminedObs(MDIModelFields inputFields, Reference decedentReference) throws ParseException {
-		Observation returnObs = new Observation();
-		returnObs.setStatus(ObservationStatus.FINAL);
-		returnObs.setSubject(decedentReference);
-		returnObs.setCode(new CodeableConcept().addCoding(new Coding(
+		Observation returnDateExaminedObs = new Observation();
+		CommonUtil.setUUID(returnDateExaminedObs);
+		returnDateExaminedObs.setStatus(ObservationStatus.FINAL);
+		returnDateExaminedObs.setSubject(decedentReference);
+		returnDateExaminedObs.setCode(new CodeableConcept().addCoding(new Coding(
 				"urn:mdi:temporary:code", "1000003", "Date of examination or case review")));
 		if(inputFields.EXAMDATE != null && !inputFields.EXAMDATE.isEmpty()) {
 			Date reportDate = MDIToFhirCMSUtil.parseDate(inputFields.EXAMDATE);
-			returnObs.setValue(new DateTimeType(reportDate));
+			returnDateExaminedObs.setValue(new DateTimeType(reportDate));
 		}
-		return returnObs;
+		return returnDateExaminedObs;
 	}
 	
 	private Observation createLKAObs(MDIModelFields inputFields, Reference decedentReference) throws ParseException {
-		Observation returnObs = new Observation();
-		returnObs.setStatus(ObservationStatus.FINAL);
-		returnObs.setSubject(decedentReference);
-		returnObs.setCode(new CodeableConcept().addCoding(new Coding(
+		Observation returnLKAObs = new Observation();
+		CommonUtil.setUUID(returnLKAObs);
+		returnLKAObs.setStatus(ObservationStatus.FINAL);
+		returnLKAObs.setSubject(decedentReference);
+		returnLKAObs.setCode(new CodeableConcept().addCoding(new Coding(
 				"urn:mdi:temporary:code", "1000004", "Date and time of last known alive or alert")));
 		if(inputFields.LKADATE != null && !inputFields.LKADATE.isEmpty()) {
 			Date reportDate = MDIToFhirCMSUtil.parseDate(inputFields.LKADATE);
 			if(inputFields.LKATIME != null && !inputFields.LKATIME.isEmpty()) {
 				MDIToFhirCMSUtil.addTimeToDate(reportDate, inputFields.LKATIME);
 			}
-			returnObs.setValue(new DateTimeType(reportDate));
+			returnLKAObs.setValue(new DateTimeType(reportDate));
 		}
-		return returnObs;
+		return returnLKAObs;
 	}
 	
 	private Observation createCaseYearObs(MDIModelFields inputFields, Reference decedentReference) throws ParseException {
-		Observation returnObs = new Observation();
-		Meta meta = returnObs.getMeta();
+		Observation returnCaseYearObs = new Observation();
+		CommonUtil.setUUID(returnCaseYearObs);
+		Meta meta = returnCaseYearObs.getMeta();
 		meta.addProfile("notvalid://empty-profile");
-		returnObs.setMeta(meta);
-		returnObs.setStatus(ObservationStatus.FINAL);
-		returnObs.setSubject(decedentReference);
-		returnObs.setCode(new CodeableConcept().addCoding(new Coding(
+		returnCaseYearObs.setMeta(meta);
+		returnCaseYearObs.setStatus(ObservationStatus.FINAL);
+		returnCaseYearObs.setSubject(decedentReference);
+		returnCaseYearObs.setCode(new CodeableConcept().addCoding(new Coding(
 				"urn:mdi:temporary:code", "1000005", "Year by which case is categorized")));
 		if(inputFields.CASEYEAR != null && !inputFields.CASEYEAR.isEmpty()) {
 			Date reportDate = MDIToFhirCMSUtil.parseDate(inputFields.CASEYEAR);
-			returnObs.setValue(new DateTimeType(reportDate));
+			returnCaseYearObs.setValue(new DateTimeType(reportDate));
 		}
-		return returnObs;
+		return returnCaseYearObs;
 	}
 	
 	private Observation createHospitalDateTime(MDIModelFields inputFields, Reference decedentReference) throws ParseException {
-		Observation returnObs = new Observation();
-		Meta meta = returnObs.getMeta();
+		Observation returnHospitalDateTime = new Observation();
+		CommonUtil.setUUID(returnHospitalDateTime);
+		Meta meta = returnHospitalDateTime.getMeta();
 		meta.addProfile("notvalid://empty-profile");
-		returnObs.setMeta(meta);
-		returnObs.setStatus(ObservationStatus.FINAL);
-		returnObs.setSubject(decedentReference);
-		returnObs.setCode(new CodeableConcept().addCoding(new Coding(
+		returnHospitalDateTime.setMeta(meta);
+		returnHospitalDateTime.setStatus(ObservationStatus.FINAL);
+		returnHospitalDateTime.setSubject(decedentReference);
+		returnHospitalDateTime.setCode(new CodeableConcept().addCoding(new Coding(
 				"urn:mdi:temporary:code", "1000006", "Date and time decedent arrived at hospital")));
 		if(inputFields.ATHOSPDATE != null && !inputFields.ATHOSPDATE.isEmpty()) {
 			Date reportDate = MDIToFhirCMSUtil.parseDate(inputFields.CASEYEAR);
 			if(inputFields.ATHOSPTIME != null && !inputFields.ATHOSPTIME.isEmpty()) {
 				MDIToFhirCMSUtil.addTimeToDate(reportDate, inputFields.ATHOSPTIME);
 			}
-			returnObs.setValue(new DateType(reportDate));
+			returnHospitalDateTime.setValue(new DateType(reportDate));
 		}
-		return returnObs;
+		return returnHospitalDateTime;
 	}
 	
 	private DeathLocation createDeathLocation(MDIModelFields inputFields) {
 		DeathLocation returnDeathLocation = new DeathLocation();
+		CommonUtil.setUUID(returnDeathLocation);
 		Stream<String> deathAddrFields = Stream.of(inputFields.DEATHSTREET, inputFields.DEATHCITY,
 				inputFields.DEATHCOUNTY, inputFields.DEATHSTATE, inputFields.DEATHZIP);
 		if(!deathAddrFields.allMatch(x -> x == null || x.isEmpty())) {
@@ -873,6 +891,7 @@ public class MDIToFhirCMSService {
 	
 	private InjuryLocation createInjuryLocation(MDIModelFields inputFields) {
 		InjuryLocation returnInjuryLocation = new InjuryLocation();
+		CommonUtil.setUUID(returnInjuryLocation);
 		Address eventAddress = MDIToFhirCMSUtil.createAddress(inputFields.CINJSTREET, inputFields.CINJCITY, inputFields.CINJCOUNTY,
 				inputFields.CINJSTATE, inputFields.CINJZIP);
 		returnInjuryLocation.setAddress(eventAddress);
@@ -881,6 +900,7 @@ public class MDIToFhirCMSService {
 	
 	private Procedure createSurgeryProc(MDIModelFields inputFields, Reference decedentReference) throws ParseException {
 		Procedure returnProcedure = new Procedure();
+		CommonUtil.setUUID(returnProcedure);
 		Meta meta = returnProcedure.getMeta();
 		meta.addProfile("notvalid://empty-profile");
 		returnProcedure.setMeta(meta);
@@ -916,17 +936,18 @@ public class MDIToFhirCMSService {
 	}
 	
 	private AutopsyPerformedIndicator createAutopsy(MDIModelFields inputFields, Reference decedentReference) throws ParseException {
-		AutopsyPerformedIndicator autopsy = new AutopsyPerformedIndicator();
-		autopsy.setSubject(decedentReference);
+		AutopsyPerformedIndicator returnAutopsy = new AutopsyPerformedIndicator();
+		CommonUtil.setUUID(returnAutopsy);
+		returnAutopsy.setSubject(decedentReference);
 		if(inputFields.CAUTOPSY != null && !inputFields.CAUTOPSY.isEmpty()) {
-			autopsy.setValue(CommonMappingUtil.parseBooleanAndCreateCode(inputFields.CAUTOPSY));
+			returnAutopsy.setValue(CommonMappingUtil.parseBooleanAndCreateCode(inputFields.CAUTOPSY));
 		}
 		if(inputFields.AUTOPUSED != null && !inputFields.AUTOPUSED.isEmpty()) {
 			Extension autopsyUsedExt = new Extension();
 			autopsyUsedExt.setUrl("urn:mdi:temporary:code:autopsy-findings-were-used");
 			autopsyUsedExt.setValue(new BooleanType(CommonMappingUtil.parseBoolean(inputFields.AUTOPUSED)));
-			autopsy.addExtension(autopsyUsedExt);
+			returnAutopsy.addExtension(autopsyUsedExt);
 		}
-		return autopsy;
+		return returnAutopsy;
 	}
 }
