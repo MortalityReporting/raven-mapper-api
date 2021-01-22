@@ -149,14 +149,14 @@ public class FhirCMSToVRDRService {
 		}
 	}
 	
-	public JsonNode pullDCDFromBaseFhirServerAsJson(String patientIdentifierSystem, String patientIdentifierCode) throws IOException, ResourceNotFoundException {
+	public JsonNode pullDCDFromBaseFhirServerAsJson(String patientIdentifierSystem, String patientIdentifierCode) throws ResourceNotFoundException, IOException {
 		DeathCertificateDocument DCD = pullDCDFromBaseFhirServer(patientIdentifierSystem, patientIdentifierCode);
 		String rawString = jsonParser.encodeResourceToString(DCD);
 		ObjectMapper mapper = new ObjectMapper();
 		return mapper.readTree(rawString);
 	}
 	
-	public DeathCertificateDocument pullDCDFromBaseFhirServer(String patientIdentifierSystem, String patientIdentifierCode) throws IOException, ResourceNotFoundException {
+	public DeathCertificateDocument pullDCDFromBaseFhirServer(String patientIdentifierSystem, String patientIdentifierCode) throws ResourceNotFoundException {
 		Bundle patientBundle = client.search()
 				.forResource(Patient.class)
 				.where(Patient.IDENTIFIER.exactly().systemAndCode(patientIdentifierSystem, patientIdentifierCode))
@@ -167,7 +167,7 @@ public class FhirCMSToVRDRService {
 			patient = (Patient)patientBundle.getEntryFirstRep().getResource();
 		}
 		else {
-			throw new IOException("Patient not found in cms");
+			throw new ResourceNotFoundException("Patient not found in cms");
 		}
 		//Find the Death Certificate Composition in the system if it allready exists
 		Bundle compositionBundle = client.search()
@@ -176,7 +176,7 @@ public class FhirCMSToVRDRService {
 		.returnBundle(Bundle.class)
 		.execute();
 		if(!compositionBundle.hasEntry()) {
-			throw new IOException("Patient resource has no composition resources associated to them");
+			throw new ResourceNotFoundException("Patient resource has no composition resources associated to them");
 		}
 		for(BundleEntryComponent bec:compositionBundle.getEntry()) {
 			Composition currentComposition = (Composition)bec.getResource();
@@ -189,13 +189,13 @@ public class FhirCMSToVRDRService {
 						.execute();
 				ParametersParameterComponent ppc = outParams.getParameterFirstRep();
 				if(ppc == null) {
-					throw new IOException("VRDR document not found in cms");
+					throw new ResourceNotFoundException("VRDR document not found in cms");
 				}
 				DeathCertificateDocument dcd = (DeathCertificateDocument)ppc.getResource();
 				return dcd;
 			}
 		}
-		throw new IOException("Patient has compositions but no VRDR composition found");
+		throw new ResourceNotFoundException("Patient has compositions but no VRDR composition found");
 	}
 	
 	public DeathCertificateDocument createDCDFromBaseFhirServer(String patientIdentifierSystem, String patientIdentifierCode) throws Exception {

@@ -276,14 +276,6 @@ public class UploadAndExportController {
         	System.out.println("JSON BUNDLE:");
         	System.out.println(jsonBundle);
         	JsonNode submitBundleNode = mapper.readTree(jsonBundle);
-        	try {
-        		JsonNode internalVRDRNode = fhirCMSToVRDRService.pullDCDFromBaseFhirServerAsJson(inputField.SYSTEMID, inputField.CASEID);
-        		VRDRBundles.add(internalVRDRNode);
-        	}
-        	catch (ResourceNotFoundException e) {
-        		System.out.println("Could not complete the document request from the FHIR server, appending the original batch request instead");
-        		VRDRBundles.add(submitBundleNode);
-        	}
             if(prettyFhirOutput.isEmpty()) {
             	prettyFhirOutput = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(submitBundleNode);
             }
@@ -300,7 +292,17 @@ public class UploadAndExportController {
                 }
                 catch (HttpStatusCodeException e) {
                 	inputField.setSuccess(false);
+                	continue;
                 }
+                try {
+            		JsonNode internalVRDRNode = fhirCMSToVRDRService.pullDCDFromBaseFhirServerAsJson(inputField.SYSTEMID, inputField.CASEID);
+            		VRDRBundles.add(internalVRDRNode);
+            	}
+            	catch (ResourceNotFoundException e) {
+            		System.out.println("Error:"  + e.getLocalizedMessage() + "for patient id" + inputField.CASEID);
+            		System.out.println("Could not complete the document request from the FHIR server, appending the original batch request instead");
+            		VRDRBundles.add(submitBundleNode);
+            	}
             }
         }
         Map<String, Object> returnMap = new HashMap<String, Object>();
