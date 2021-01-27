@@ -157,9 +157,10 @@ public class MDIToFhirCMSUtil {
 	    return null;
 	}
 	
-	public static Address createAddress(String street, String city,
+	public static Address createAddress(String place, String street, String city,
 			String county, String state, String zip) {
 		Address returnAddress = new Address();
+		returnAddress.setText(place);
 		returnAddress.addLine(street);
 		returnAddress.setCity(city);
 		returnAddress.setDistrict(county);

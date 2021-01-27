@@ -303,7 +303,10 @@ public class UploadAndExportController {
             		System.out.println("Could not complete the document request from the FHIR server, appending the original batch request instead");
             		VRDRBundles.add(submitBundleNode);
             	}
+            }else {
+            	VRDRBundles.add(submitBundleNode);
             }
+            
         }
         Map<String, Object> returnMap = new HashMap<String, Object>();
         returnMap.put("viewmodel", inputFields);

@@ -360,7 +360,7 @@ public class MDIToFhirCMSService {
 				martialCoding.setDisplay("Unknown");
 			}
 		}
-		Address residentAddress = MDIToFhirCMSUtil.createAddress(inputFields.RESSTREET,
+		Address residentAddress = MDIToFhirCMSUtil.createAddress("", inputFields.RESSTREET,
 				inputFields.RESCITY, inputFields.RESCOUNTY, inputFields.RESSTATE, inputFields.RESZIP);
 		if(inputFields.RESNAME != null && !inputFields.RESNAME.isEmpty()) {
 			Extension resNameExt = new Extension();
@@ -591,7 +591,7 @@ public class MDIToFhirCMSService {
 	private DispositionLocation createDispositionLocation(MDIModelFields inputFields, Reference decedentReferece) {
 		DispositionLocation returnDispLocation = new DispositionLocation();
 		CommonUtil.setUUID(returnDispLocation);
-		Address dispAddr = MDIToFhirCMSUtil.createAddress(inputFields.DISP_STREET, inputFields.DISP_CITY, inputFields.DISP_COUNTY, inputFields.DISP_STATE, inputFields.DISP_ZIP);
+		Address dispAddr = MDIToFhirCMSUtil.createAddress(inputFields.DISPPLACE, inputFields.DISP_STREET, inputFields.DISP_CITY, inputFields.DISP_COUNTY, inputFields.DISP_STATE, inputFields.DISP_ZIP);
 		returnDispLocation.setAddress(dispAddr);
 		if(inputFields.DISPPLACE!= null && !inputFields.DISPPLACE.isEmpty()) {
 			CodeableConcept physicalTypeCode = new CodeableConcept();
@@ -824,7 +824,7 @@ public class MDIToFhirCMSService {
 		Stream<String> deathAddrFields = Stream.of(inputFields.DEATHSTREET, inputFields.DEATHCITY,
 				inputFields.DEATHCOUNTY, inputFields.DEATHSTATE, inputFields.DEATHZIP);
 		if(!deathAddrFields.allMatch(x -> x == null || x.isEmpty())) {
-			Address deathAddr = MDIToFhirCMSUtil.createAddress(inputFields.DEATHSTREET, inputFields.DEATHCITY,
+			Address deathAddr = MDIToFhirCMSUtil.createAddress(inputFields.DEATHPLACE, inputFields.DEATHSTREET, inputFields.DEATHCITY,
 					inputFields.DEATHCOUNTY, inputFields.DEATHSTATE, inputFields.DEATHZIP);
 			returnDeathLocation.setAddress(deathAddr);
 		}
@@ -870,19 +870,19 @@ public class MDIToFhirCMSService {
 		returnDeathLocation.addType(typeCode);
 		Extension foundAddrExt = new Extension();
 		foundAddrExt.setUrl("urn:mdi:temporary:code:address-where-found-dead-unconscious-or-in-distress");
-		Address foundAddr = MDIToFhirCMSUtil.createAddress(inputFields.FOUNDADDR_STREET, inputFields.FOUNDADDR_CITY,
+		Address foundAddr = MDIToFhirCMSUtil.createAddress("", inputFields.FOUNDADDR_STREET, inputFields.FOUNDADDR_CITY,
 				inputFields.FOUNDADDR_COUNTY, inputFields.FOUNDADDR_STATE, inputFields.FOUNDADDR_ZIP);
 		foundAddrExt.setValue(foundAddr);
 		returnDeathLocation.addExtension(foundAddrExt);
 		Extension prnExt = new Extension();
 		prnExt.setUrl("urn:mdi:temporary:code:pronounced-death-place");
-		Address pronouncedDeadAddr = MDIToFhirCMSUtil.createAddress(inputFields.PRNSTREET, inputFields.PRNCITY,
+		Address pronouncedDeadAddr = MDIToFhirCMSUtil.createAddress(inputFields.PRNPLACE, inputFields.PRNSTREET, inputFields.PRNCITY,
 				inputFields.PRNCOUNTY, inputFields.PRNSTATE, inputFields.PRNZIP);
 		prnExt.setValue(pronouncedDeadAddr);
 		returnDeathLocation.addExtension(prnExt);
 		Extension sceneExt = new Extension();
 		sceneExt.setUrl("urn:mdi:temporary:code:scene-address");
-		Address sceneAddr = MDIToFhirCMSUtil.createAddress(inputFields.SCENEADDR_STREET, inputFields.SCENEADDR_CITY,
+		Address sceneAddr = MDIToFhirCMSUtil.createAddress("", inputFields.SCENEADDR_STREET, inputFields.SCENEADDR_CITY,
 				inputFields.SCENEADDR_COUNTY, inputFields.SCENEADDR_STATE, inputFields.SCENEADDR_ZIP);
 		sceneExt.setValue(sceneAddr);
 		returnDeathLocation.addExtension(sceneExt);
@@ -892,7 +892,7 @@ public class MDIToFhirCMSService {
 	private InjuryLocation createInjuryLocation(MDIModelFields inputFields) {
 		InjuryLocation returnInjuryLocation = new InjuryLocation();
 		CommonUtil.setUUID(returnInjuryLocation);
-		Address eventAddress = MDIToFhirCMSUtil.createAddress(inputFields.CINJSTREET, inputFields.CINJCITY, inputFields.CINJCOUNTY,
+		Address eventAddress = MDIToFhirCMSUtil.createAddress(inputFields.CINJPLACE, inputFields.CINJSTREET, inputFields.CINJCITY, inputFields.CINJCOUNTY,
 				inputFields.CINJSTATE, inputFields.CINJZIP);
 		returnInjuryLocation.setAddress(eventAddress);
 		return returnInjuryLocation;
