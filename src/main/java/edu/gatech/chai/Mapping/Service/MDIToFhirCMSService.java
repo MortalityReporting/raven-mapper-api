@@ -195,7 +195,7 @@ public class MDIToFhirCMSService {
 		}
 		// Handle Death Date
 		Stream<String> deathDateFields = Stream.of(inputFields.PRNDATE, inputFields.PRNTIME, inputFields.CDEATHFLAG,
-				inputFields.CDEATHDATE, inputFields.CDEATHDATE, inputFields.CDEATHTIME);
+				inputFields.CDEATHDATE, inputFields.CDEATHTIME);
 		if(!deathDateFields.allMatch(x -> x == null || x.isEmpty())) {
 			DeathDate deathDate = createDeathDate(inputFields, decedentReference, deathLocation);
 			MDIToFhirCMSUtil.addResourceToBundle(returnBundle, deathDate);
@@ -591,61 +591,61 @@ public class MDIToFhirCMSService {
 	private DispositionLocation createDispositionLocation(MDIModelFields inputFields, Reference decedentReferece) {
 		DispositionLocation returnDispLocation = new DispositionLocation();
 		CommonUtil.setUUID(returnDispLocation);
-		Address dispAddr = MDIToFhirCMSUtil.createAddress(inputFields.DISPPLACE, inputFields.DISP_STREET, inputFields.DISP_CITY, inputFields.DISP_COUNTY, inputFields.DISP_STATE, inputFields.DISP_ZIP);
+		Address dispAddr = MDIToFhirCMSUtil.createAddress(inputFields.DISP_PLACE, inputFields.DISP_STREET, inputFields.DISP_CITY, inputFields.DISP_COUNTY, inputFields.DISP_STATE, inputFields.DISP_ZIP);
 		returnDispLocation.setAddress(dispAddr);
-		if(inputFields.DISPPLACE!= null && !inputFields.DISPPLACE.isEmpty()) {
+		if(inputFields.DISP_PLACE!= null && !inputFields.DISP_PLACE.isEmpty()) {
 			CodeableConcept physicalTypeCode = new CodeableConcept();
 			Coding physicalTypeCoding = new Coding();
 			physicalTypeCoding.setSystem("http://hl7.org/fhir/ValueSet/location-physical-type");
-			if(MDIToFhirCMSUtil.containsIgnoreCase(inputFields.DISPPLACE, "Site")) {
+			if(MDIToFhirCMSUtil.containsIgnoreCase(inputFields.DISP_PLACE, "Site")) {
 				physicalTypeCoding.setCode("si");
 				physicalTypeCoding.setDisplay("Site");
 			}
-			else if(MDIToFhirCMSUtil.containsIgnoreCase(inputFields.DISPPLACE, "Building")) {
+			else if(MDIToFhirCMSUtil.containsIgnoreCase(inputFields.DISP_PLACE, "Building")) {
 				physicalTypeCoding.setCode("bu");
 				physicalTypeCoding.setDisplay("Building");
 			}
-			else if(MDIToFhirCMSUtil.containsIgnoreCase(inputFields.DISPPLACE, "wing")) {
+			else if(MDIToFhirCMSUtil.containsIgnoreCase(inputFields.DISP_PLACE, "wing")) {
 				physicalTypeCoding.setCode("wi");
 				physicalTypeCoding.setDisplay("Wing");
 			}
-			else if(MDIToFhirCMSUtil.containsIgnoreCase(inputFields.DISPPLACE, "ward")) {
+			else if(MDIToFhirCMSUtil.containsIgnoreCase(inputFields.DISP_PLACE, "ward")) {
 				physicalTypeCoding.setCode("wa");
 				physicalTypeCoding.setDisplay("Ward");
 			}
-			else if(MDIToFhirCMSUtil.containsIgnoreCase(inputFields.DISPPLACE, "level")) {
+			else if(MDIToFhirCMSUtil.containsIgnoreCase(inputFields.DISP_PLACE, "level")) {
 				physicalTypeCoding.setCode("lvl");
 				physicalTypeCoding.setDisplay("Level");
 			}
-			else if(MDIToFhirCMSUtil.containsIgnoreCase(inputFields.DISPPLACE, "corridor")) {
+			else if(MDIToFhirCMSUtil.containsIgnoreCase(inputFields.DISP_PLACE, "corridor")) {
 				physicalTypeCoding.setCode("co");
 				physicalTypeCoding.setDisplay("Corridor");
 			}
-			else if(MDIToFhirCMSUtil.containsIgnoreCase(inputFields.DISPPLACE, "room")) {
+			else if(MDIToFhirCMSUtil.containsIgnoreCase(inputFields.DISP_PLACE, "room")) {
 				physicalTypeCoding.setCode("ro");
 				physicalTypeCoding.setDisplay("Room");
 			}
-			else if(MDIToFhirCMSUtil.containsIgnoreCase(inputFields.DISPPLACE, "bed")) {
+			else if(MDIToFhirCMSUtil.containsIgnoreCase(inputFields.DISP_PLACE, "bed")) {
 				physicalTypeCoding.setCode("bd");
 				physicalTypeCoding.setDisplay("Bed");
 			}
-			else if(MDIToFhirCMSUtil.containsIgnoreCase(inputFields.DISPPLACE, "vechicle")) {
+			else if(MDIToFhirCMSUtil.containsIgnoreCase(inputFields.DISP_PLACE, "vechicle")) {
 				physicalTypeCoding.setCode("ve");
 				physicalTypeCoding.setDisplay("Vechicle");
 			}
-			else if(MDIToFhirCMSUtil.containsIgnoreCase(inputFields.DISPPLACE, "house")) {
+			else if(MDIToFhirCMSUtil.containsIgnoreCase(inputFields.DISP_PLACE, "house")) {
 				physicalTypeCoding.setCode("ho");
 				physicalTypeCoding.setDisplay("House");
 			}
-			else if(MDIToFhirCMSUtil.containsIgnoreCase(inputFields.DISPPLACE, "cabinet")) {
+			else if(MDIToFhirCMSUtil.containsIgnoreCase(inputFields.DISP_PLACE, "cabinet")) {
 				physicalTypeCoding.setCode("ca");
 				physicalTypeCoding.setDisplay("Cabinet");
 			}
-			else if(MDIToFhirCMSUtil.containsIgnoreCase(inputFields.DISPPLACE, "Road")) {
+			else if(MDIToFhirCMSUtil.containsIgnoreCase(inputFields.DISP_PLACE, "Road")) {
 				physicalTypeCoding.setCode("rd");
 				physicalTypeCoding.setDisplay("road");
 			}
-			else if(MDIToFhirCMSUtil.containsIgnoreCase(inputFields.DISPPLACE, "Jurisdiction")) {
+			else if(MDIToFhirCMSUtil.containsIgnoreCase(inputFields.DISP_PLACE, "Jurisdiction")) {
 				physicalTypeCoding.setCode("jdn");
 				physicalTypeCoding.setDisplay("Jurisidiction");
 			}
@@ -719,13 +719,13 @@ public class MDIToFhirCMSService {
 		if(location != null && !location.isEmpty()) {
 			returnDeathDate.addPatientLocationExtension(location);
 		}
-		/*if(inputFields.CDEATHDATE != null && !inputFields.CDEATHDATE.isEmpty()) {
+		if(inputFields.CDEATHDATE != null && !inputFields.CDEATHDATE.isEmpty()) {
 			Date certDate = MDIToFhirCMSUtil.parseDate(inputFields.CDEATHDATE);
 			if(inputFields.CDEATHTIME != null && !inputFields.CDEATHTIME.isEmpty()) {
 				MDIToFhirCMSUtil.addTimeToDate(certDate, inputFields.CDEATHTIME);
 			}
 			returnDeathDate.setEffective(new DateTimeType(certDate));
-		}*/
+		}
 		if(inputFields.PRNDATE != null && !inputFields.PRNDATE.isEmpty()) {
 			Date prnDate = MDIToFhirCMSUtil.parseDate(inputFields.PRNDATE);
 			if(inputFields.PRNTIME != null && !inputFields.PRNTIME.isEmpty()) {

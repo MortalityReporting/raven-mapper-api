@@ -76,6 +76,10 @@ public class MDIModelFields {
 	@CsvBindByName
 	public String FOUNDTIME = "";
 	@CsvBindByName
+	public String CDEATHDATE = "";
+	@CsvBindByName
+	public String CDEATHTIME = "";
+	@CsvBindByName
 	public String EVENTDATE = "";
 	@CsvBindByName
 	public String EVENTTIME = "";
@@ -93,8 +97,6 @@ public class MDIModelFields {
 	public String CIDATEFLAG = "";
 	@CsvBindByName
 	public String CDEATHFLAG = "";
-	@CsvBindByName
-	public String CDEATHTIME = "";
 	@CsvBindByName
 	public String LKADATE = "";
 	@CsvBindByName
@@ -162,7 +164,7 @@ public class MDIModelFields {
 	@CsvBindByName
 	public String PRNZIP = "";
 	@CsvBindByName
-	public String DISPPLACE = "";
+	public String DISP_PLACE = "";
 	@CsvBindByName
 	public String DISP_STREET = "";
 	@CsvBindByName
@@ -185,8 +187,6 @@ public class MDIModelFields {
 	public String CINJSTATE = "";
 	@CsvBindByName
 	public String CINJZIP = "";
-	@CsvBindByName
-	public String CDEATHDATE = "";
 	@CsvBindByName
 	public String RESNAME = "";
 	@CsvBindByName
@@ -1035,12 +1035,12 @@ public class MDIModelFields {
 		DEATHZIP = dEATHZIP;
 	}
 
-	public String getDISPPLACE() {
-		return DISPPLACE;
+	public String getDISP_PLACE() {
+		return DISP_PLACE;
 	}
 
-	public void setDISPPLACE(String dISPPLACE) {
-		DISPPLACE = dISPPLACE;
+	public void setDISP_PLACE(String dISP_PLACE) {
+		DISP_PLACE = dISP_PLACE;
 	}
 
 	public String getDISP_STREET() {
