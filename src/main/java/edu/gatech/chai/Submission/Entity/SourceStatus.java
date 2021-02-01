@@ -27,7 +27,7 @@ public class SourceStatus implements Serializable{
 	private Status status;
 	@Column(name = "responseCode")
 	private String responseCode;
-	@Column(name = "error")
+	@Column(name = "error", length=10000)
 	@ElementCollection
 	private List<String> error;
 	@Column(name = "identifier")

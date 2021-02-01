@@ -809,11 +809,12 @@ public class MDIToFhirCMSService {
 		returnHospitalDateTime.setCode(new CodeableConcept().addCoding(new Coding(
 				"urn:mdi:temporary:code", "1000006", "Date and time decedent arrived at hospital")));
 		if(inputFields.ATHOSPDATE != null && !inputFields.ATHOSPDATE.isEmpty()) {
-			Date reportDate = MDIToFhirCMSUtil.parseDate(inputFields.CASEYEAR);
+			String hospitalDateString = inputFields.ATHOSPDATE;
+			Date reportDate = MDIToFhirCMSUtil.parseDate(hospitalDateString);
 			if(inputFields.ATHOSPTIME != null && !inputFields.ATHOSPTIME.isEmpty()) {
 				MDIToFhirCMSUtil.addTimeToDate(reportDate, inputFields.ATHOSPTIME);
 			}
-			returnHospitalDateTime.setValue(new DateType(reportDate));
+			returnHospitalDateTime.setValue(new DateTimeType(reportDate));
 		}
 		return returnHospitalDateTime;
 	}
