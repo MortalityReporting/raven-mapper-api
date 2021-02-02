@@ -724,17 +724,17 @@ public class MDIToFhirCMSService {
 			if(inputFields.CDEATHTIME != null && !inputFields.CDEATHTIME.isEmpty()) {
 				MDIToFhirCMSUtil.addTimeToDate(certDate, inputFields.CDEATHTIME);
 			}
-			returnDeathDate.setEffective(new DateTimeType(certDate));
+			DateTimeType certValueDT = new DateTimeType(certDate);
+			returnDeathDate.setEffective(certValueDT);
+			returnDeathDate.setValue(certValueDT);
 		}
 		if(inputFields.PRNDATE != null && !inputFields.PRNDATE.isEmpty()) {
 			Date prnDate = MDIToFhirCMSUtil.parseDate(inputFields.PRNDATE);
 			if(inputFields.PRNTIME != null && !inputFields.PRNTIME.isEmpty()) {
 				MDIToFhirCMSUtil.addTimeToDate(prnDate, inputFields.PRNTIME);
 			}
-			DateTimeType deathDT = new DateTimeType(prnDate);
-			returnDeathDate.setEffective(deathDT);
-			returnDeathDate.setValue(deathDT);
-			returnDeathDate.addDatePronouncedDead(deathDT);
+			DateTimeType prnDT = new DateTimeType(prnDate);
+			returnDeathDate.addDatePronouncedDead(prnDT);
 		}
 		if(inputFields.CDEATHFLAG != null && !inputFields.CDEATHFLAG.isEmpty()) {
 			Extension qualificationExtension = new Extension();

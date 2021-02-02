@@ -239,6 +239,7 @@ public class UploadAndExportController {
 				}
 			}
 			catch(RestClientException | IOException e) {
+				source.setStatus(Status.error);
 				source.addError("Request Error:" + e.getClass().getName() + ", " + e.getMessage());
 			}
 		}
