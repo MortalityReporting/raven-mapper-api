@@ -89,7 +89,7 @@ public class VitalcheckSubmissionService{
 		//Setup post for new record. Note have to use MVM because the httpheaders class doesn't allow custom content type
 		MultiValueMap<String, String> headerStrings = new LinkedMultiValueMap<String, String>();
 		headerStrings.add("Authorization", "Bearer " + accessToken);
-		headerStrings.add("Content-Type", "application/fhir+xml");
+		headerStrings.add("Content-Type", "application/fhir+json");
 		//Create messageheader and bundle it with the dcd
 		Bundle messageBundle = new Bundle();
 		
@@ -108,10 +108,10 @@ public class VitalcheckSubmissionService{
 		messageBundle.addEntry().setResource(header);
 		messageBundle.addEntry().setResource(parameters);
 		messageBundle.addEntry().setResource(dcd);
-		String bundleMessageXML = vrdrFhirContext.getCtx().newXmlParser().encodeResourceToString(messageBundle);
-		System.out.println(bundleMessageXML);
+		String bundleMessageJson  = vrdrFhirContext.getCtx().newJsonParser().encodeResourceToString(messageBundle);
+		System.out.println(bundleMessageJson);
 		//TODO: Submit messageheader bundle to vitalcheck
-		HttpEntity<String> directRequestEntity = new HttpEntity<String>(bundleMessageXML, headerStrings);
+		HttpEntity<String> directRequestEntity = new HttpEntity<String>(bundleMessageJson, headerStrings);
 		ResponseEntity<String> response = restTemplate.postForEntity(POSTendpoint, directRequestEntity, String.class);
 		return response;
 	}

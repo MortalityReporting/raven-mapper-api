@@ -320,45 +320,48 @@ public class MDIToFhirCMSService {
 			returnDecedent.addIdentifier(identifier);
 		}
 		if(inputFields.MARITAL != null && !inputFields.MARITAL.isEmpty()) {
-			Coding martialCoding = new Coding();
-			martialCoding.setSystem("http://terminology.hl7.org/CodeSystem/v3-MaritalStatus");
+			CodeableConcept maritalCode = new CodeableConcept();
+			Coding maritalCoding = new Coding();
+			maritalCoding.setSystem("http://terminology.hl7.org/CodeSystem/v3-MaritalStatus");
 			if(MDIToFhirCMSUtil.containsIgnoreCase(inputFields.MARITAL, "Annul")) {
-				martialCoding.setCode("A");
-				martialCoding.setDisplay("Annulled");
+				maritalCoding.setCode("A");
+				maritalCoding.setDisplay("Annulled");
 			}
 			else if(MDIToFhirCMSUtil.containsIgnoreCase(inputFields.MARITAL, "Divorce")) {
-				martialCoding.setCode("D");
-				martialCoding.setDisplay("Divorced");
+				maritalCoding.setCode("D");
+				maritalCoding.setDisplay("Divorced");
 			}
 			else if(MDIToFhirCMSUtil.containsIgnoreCase(inputFields.MARITAL, "Interlocutory")) {
-				martialCoding.setCode("I");
-				martialCoding.setDisplay("Interlocutory");
+				maritalCoding.setCode("I");
+				maritalCoding.setDisplay("Interlocutory");
 			}
 			else if(MDIToFhirCMSUtil.containsIgnoreCase(inputFields.MARITAL, "Polygamous")) {
-				martialCoding.setCode("P");
-				martialCoding.setDisplay("Polygamous");
+				maritalCoding.setCode("P");
+				maritalCoding.setDisplay("Polygamous");
 			}
 			else if(MDIToFhirCMSUtil.containsIgnoreCase(inputFields.MARITAL, "Never Married") || MDIToFhirCMSUtil.containsIgnoreCase(inputFields.MARITAL, "No")) {
-				martialCoding.setCode("U");
-				martialCoding.setDisplay("unmarried");
+				maritalCoding.setCode("U");
+				maritalCoding.setDisplay("unmarried");
 			}
 			else if(MDIToFhirCMSUtil.containsIgnoreCase(inputFields.MARITAL, "Domestic Partner")) {
-				martialCoding.setCode("T");
-				martialCoding.setDisplay("Domestic partner");
+				maritalCoding.setCode("T");
+				maritalCoding.setDisplay("Domestic partner");
 			}
 			else if(MDIToFhirCMSUtil.containsIgnoreCase(inputFields.MARITAL, "Widow")) {
-				martialCoding.setCode("W");
-				martialCoding.setDisplay("Widowed");
+				maritalCoding.setCode("W");
+				maritalCoding.setDisplay("Widowed");
 			}
 			else if(MDIToFhirCMSUtil.containsIgnoreCase(inputFields.MARITAL, "Married")) {
-				martialCoding.setCode("M");
-				martialCoding.setDisplay("Married");
+				maritalCoding.setCode("M");
+				maritalCoding.setDisplay("Married");
 			}
 			else {
-				martialCoding.setSystem("http://terminology.hl7.org/CodeSystem/v3-NullFlavor");
-				martialCoding.setCode("UNK");
-				martialCoding.setDisplay("Unknown");
+				maritalCode.setText(inputFields.MARITAL);
 			}
+			if(!maritalCoding.isEmpty()) {
+				maritalCode.addCoding(maritalCoding);
+			}
+			returnDecedent.setMaritalStatus(maritalCode);
 		}
 		Address residentAddress = MDIToFhirCMSUtil.createAddress("", inputFields.RESSTREET,
 				inputFields.RESCITY, inputFields.RESCOUNTY, inputFields.RESSTATE, inputFields.RESZIP);
@@ -566,12 +569,15 @@ public class MDIToFhirCMSService {
 				mannerCoding.setCode("185973002");
 				mannerCoding.setDisplay("Patient awaiting investigation");
 			}
-			else {
-				mannerCoding.setCode("65037004");
-				mannerCoding.setDisplay("Death, manner undetermined");
-			}
 		}
-		manner.setValue(new CodeableConcept().addCoding(mannerCoding));
+		CodeableConcept mannerCode = new CodeableConcept();
+		if(!mannerCoding.isEmpty()) {
+			mannerCode.addCoding(mannerCoding);
+		}
+		else {
+			mannerCode.setText(inputFields.MANNER);
+		}
+		manner.setValue(mannerCode);
 		manner.setSubject(decedentReference);
 		return manner;
 	}
@@ -629,7 +635,7 @@ public class MDIToFhirCMSService {
 				physicalTypeCoding.setCode("bd");
 				physicalTypeCoding.setDisplay("Bed");
 			}
-			else if(MDIToFhirCMSUtil.containsIgnoreCase(inputFields.DISP_PLACE, "vechicle")) {
+			else if(MDIToFhirCMSUtil.containsIgnoreCase(inputFields.DISP_PLACE, "vehicle")) {
 				physicalTypeCoding.setCode("ve");
 				physicalTypeCoding.setDisplay("Vechicle");
 			}
@@ -649,12 +655,13 @@ public class MDIToFhirCMSService {
 				physicalTypeCoding.setCode("jdn");
 				physicalTypeCoding.setDisplay("Jurisidiction");
 			}
-			else {
-				physicalTypeCoding.setCode("area");
-				physicalTypeCoding.setDisplay("area");
-			}
 			
-			physicalTypeCode.addCoding(physicalTypeCoding);
+			if(!physicalTypeCoding.isEmpty()) {
+				physicalTypeCode.addCoding(physicalTypeCoding);
+			}
+			else {
+				physicalTypeCode.setText(inputFields.DISP_PLACE);
+			}
 			returnDispLocation.setPhysicalType(physicalTypeCode);
 		}
 		return returnDispLocation;
@@ -857,9 +864,7 @@ public class MDIToFhirCMSService {
 				typeCoding.setDisplay("Death in nursing home or long term care facility (event)");
 			}
 			else{
-				typeCoding.setSystem("http://terminology.hl7.org/CodeSystem/v3-NullFlavor");
-				typeCoding.setCode("OTH");
-				typeCoding.setDisplay("other");
+				typeCode.setText(inputFields.DEATHPLACE);
 			}
 		}
 		else {
@@ -867,7 +872,9 @@ public class MDIToFhirCMSService {
 			typeCoding.setCode("UNK");
 			typeCoding.setDisplay("unknown");
 		}
-		typeCode.addCoding(typeCoding);
+		if(!typeCoding.isEmpty()) {
+			typeCode.addCoding(typeCoding);
+		}
 		returnDeathLocation.addType(typeCode);
 		Extension foundAddrExt = new Extension();
 		foundAddrExt.setUrl("urn:mdi:temporary:code:address-where-found-dead-unconscious-or-in-distress");
@@ -911,18 +918,18 @@ public class MDIToFhirCMSService {
 		CodeableConcept surgeryPerformedCode = null;
 		if(inputFields.SURGERY != null && !inputFields.SURGERY.isEmpty()) {
 			surgeryPerformedCode = CommonMappingUtil.parseBooleanAndCreateCode(inputFields.SURGERY);
+			if(surgeryPerformedCode.equals(CommonUtil.yesCode)) {
+				returnProcedure.setStatus(ProcedureStatus.COMPLETED);
+			}
+			else if(surgeryPerformedCode.equals(CommonUtil.unknownCode)) {
+				returnProcedure.setStatus(ProcedureStatus.UNKNOWN);
+			}
+			else {
+				returnProcedure.setStatus(ProcedureStatus.NOTDONE);
+			}
 		}
 		else {
-			surgeryPerformedCode = CommonUtil.noCode;
-		}
-		if(surgeryPerformedCode.equals(CommonUtil.yesCode)) {
-			returnProcedure.setStatus(ProcedureStatus.COMPLETED);
-		}
-		else if(surgeryPerformedCode.equals(CommonUtil.unknownCode)) {
 			returnProcedure.setStatus(ProcedureStatus.UNKNOWN);
-		}
-		else {
-			returnProcedure.setStatus(ProcedureStatus.NOTDONE);
 		}
 		if(inputFields.SURGDATE != null && !inputFields.SURGDATE.isEmpty()) {
 			Date reportDate = MDIToFhirCMSUtil.parseDate(inputFields.SURGDATE);

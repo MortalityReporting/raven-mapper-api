@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,6 +45,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 
@@ -234,13 +236,19 @@ public class UploadAndExportController {
 				if(sourcemode.equalsIgnoreCase("nightingale")) {
 					source = handleNightingaleSubmission(sourceurl, dcd, source);
 				}
-				else if(sourcemode.equalsIgnoreCase("vitalcheck")) {
+			}
+			catch(HttpClientErrorException e) {
+				source.setStatus(Status.error);
+				source.addError("Request Error:" + e.getClass().getName() + ", " + e.getResponseBodyAsString());
+			}
+			try {
+				if(sourcemode.equalsIgnoreCase("vitalcheck")) {
 					source = handleVitalCheckSubmission(sourceurl, dcd, source);
 				}
 			}
-			catch(RestClientException | IOException e) {
+			catch(HttpClientErrorException e) {
 				source.setStatus(Status.error);
-				source.addError("Request Error:" + e.getClass().getName() + ", " + e.getMessage());
+				source.addError("Request Error:" + e.getClass().getName() + ", " + e.getResponseBodyAsString());
 			}
 		}
 		patientSubmitRepository.save(submitEntity);

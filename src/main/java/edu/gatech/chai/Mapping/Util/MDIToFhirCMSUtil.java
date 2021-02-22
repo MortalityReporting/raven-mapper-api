@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,9 +26,9 @@ import org.hl7.fhir.r4.model.Meta;
 import org.hl7.fhir.r4.model.Resource;
 
 public class MDIToFhirCMSUtil {
-	public static List<String> dateFormatStrings = Arrays.asList("MM/dd/yyyy",
-			"MM/dd/yy","dd-M-yyyy hh:mm:ss","dd MMMM yyyy","dd MMMM yyyy zzzz",
-			"E, dd MMM yyyy HH:mm:ss z","MM-dd-yy","MM-dd-yyyy", "MMMM DD, YYYY", "MMddyyyy", "MMddyy", "YYYY");
+	public static List<String> dateFormatStrings = Arrays.asList("MM/dd/yy", "MM/dd/yyyy", "dd-M-yy",
+			"dd-M-yyyy", "dd MMMM yy", "dd MMMM yyyy", "dd MMMM yy zzzz", "dd MMMM yyyy zzzz",
+			"E, dd MMM yy","E, dd MMM yyyy","MM-dd-yy","MM-dd-yyyy", "MMMM DD, yy", "MMMM DD, yyyy", "MMddyy", "MMddyyyy", "yy", "yyyy");
 	public static List<String> timeFormatStrings = Arrays.asList("hh:mm:ss a", "hh:mm a",
 			"hh:mm:ss", "hh:mm","hhmm","hhmmss");
 	public static String ageRegex = "(\\d+)\\s*(year|month|week|day|hour|minute)";
@@ -53,7 +54,9 @@ public class MDIToFhirCMSUtil {
 	    {
 	        try
 	        {
-	            return new SimpleDateFormat(formatString).parse(dateString);
+	        	SimpleDateFormat sdf = new SimpleDateFormat(formatString);
+	        	sdf.setTimeZone(TimeZone.getDefault());
+	            return sdf.parse(dateString);
 	        }
 	        catch (ParseException e) {}
 	    }
@@ -64,7 +67,9 @@ public class MDIToFhirCMSUtil {
 	    {
 	        try
 	        {
-	            return new SimpleDateFormat(formatString).parse(timeString);
+	            SimpleDateFormat sdf = new SimpleDateFormat(formatString);
+	            sdf.setTimeZone(TimeZone.getDefault());
+	            return sdf.parse(timeString);
 	        }
 	        catch (ParseException e) {}
 	    }
