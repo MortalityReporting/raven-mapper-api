@@ -3,8 +3,8 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>edu.gatech</groupId>
-  <artifactId>raven-mapper-api</artifactId>
-  <version>0.0.3-SNAPSHOT</version>
+  <artifactId>raven-import-and-submit-api</artifactId>
+  <version>0.0.4-SNAPSHOT</version>
   <packaging>war</packaging>
 
   <name>OpenMDIFhirMapping</name>
@@ -79,6 +79,11 @@
 	<dependency>
         <groupId>com.fasterxml.jackson.dataformat</groupId>
         <artifactId>jackson-dataformat-xml</artifactId>
+        <version>2.11.1</version>
+    </dependency>
+    <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-core</artifactId>
         <version>2.11.1</version>
     </dependency>
   </dependencies>
