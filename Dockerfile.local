@@ -4,7 +4,7 @@ ADD . .
 RUN mvn clean install -DskipTests -f /usr/src/raven_import_and_submit_api/VRDR_javalib/
 RUN mvn clean install -DskipTests -f /usr/src/raven_import_and_submit_api/
 
-FROM tomcat:latest
+FROM tomcat:9.0.43-jdk11-openjdk-slim
 #move the WAR for contesa to the webapps directory
 ENV FHIRCMS_URL=http://raven-fhir-server:8080/raven-fhir-server/fhir
 ENV FHIRCMS_BASIC_USERNAME=client
