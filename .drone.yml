@@ -11,7 +11,7 @@ steps:
 - name: create_docker_image_raven-mapper-api
   image: plugins/docker
   settings:
-    repo: gt-build.hdap.gatech.edu/raven-mapper-api
+    repo: gt-build.hdap.gatech.edu/raven-import-and-submit-api
     context: .
     dockerfile: ./Dockerfile
 
