@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
@@ -236,12 +237,6 @@ public class UploadAndExportController {
 				if(sourcemode.equalsIgnoreCase("nightingale")) {
 					source = handleNightingaleSubmission(sourceurl, dcd, source);
 				}
-			}
-			catch(HttpClientErrorException e) {
-				source.setStatus(Status.error);
-				source.addError("Request Error:" + e.getClass().getName() + ", " + e.getResponseBodyAsString());
-			}
-			try {
 				if(sourcemode.equalsIgnoreCase("vitalcheck")) {
 					source = handleVitalCheckSubmission(sourceurl, dcd, source);
 				}
@@ -249,6 +244,10 @@ public class UploadAndExportController {
 			catch(HttpClientErrorException e) {
 				source.setStatus(Status.error);
 				source.addError("Request Error:" + e.getClass().getName() + ", " + e.getResponseBodyAsString());
+			}
+			catch(ResourceAccessException e) {
+				source.setStatus(Status.error);
+				source.addError("Resource Access Error:" + e.getClass().getName() + ", " + e.getLocalizedMessage());
 			}
 		}
 		patientSubmitRepository.save(submitEntity);
@@ -324,7 +323,7 @@ public class UploadAndExportController {
         return returnMap;
     }
     
-    private SourceStatus handleNightingaleSubmission(String sourceurl, DeathCertificateDocument dcd, SourceStatus source) throws RestClientException, IOException {
+    private SourceStatus handleNightingaleSubmission(String sourceurl, DeathCertificateDocument dcd, SourceStatus source) throws ResourceAccessException, RestClientException, IOException {
     	if(source == null) {
     		source = new SourceStatus(sourceurl);
     	}
@@ -355,7 +354,7 @@ public class UploadAndExportController {
 		return source;
     }
     
-    private SourceStatus handleVitalCheckSubmission(String sourceurl, DeathCertificateDocument dcd, SourceStatus source) throws RestClientException, IOException {
+    private SourceStatus handleVitalCheckSubmission(String sourceurl, DeathCertificateDocument dcd, SourceStatus source) throws ResourceAccessException, RestClientException, IOException {
     	if(source == null) {
     		source = new SourceStatus(sourceurl);
     	}

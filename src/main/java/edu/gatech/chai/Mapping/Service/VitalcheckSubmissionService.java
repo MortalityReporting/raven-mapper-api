@@ -1,6 +1,7 @@
 package edu.gatech.chai.Mapping.Service;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collections;
@@ -33,6 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -62,7 +64,7 @@ public class VitalcheckSubmissionService{
 		this.vrdrFhirContext = vrdrFhirContext;
 	}
 	
-	public ResponseEntity<String> submitRecord(String POSTendpoint, DeathCertificateDocument dcd) throws RestClientException, IOException{
+	public ResponseEntity<String> submitRecord(String POSTendpoint, DeathCertificateDocument dcd) throws ResourceAccessException, RestClientException, IOException{
 		//Setup basic authentication to get token from token server
 		String staticVitalCheckTokenBearerEndpoint = "https://fhirtest.centralus.cloudapp.azure.com/IdentityServerNM/connect/token?daveuser=examiner&bucode=STATE_ME_OFFICE_OFFICE_OF_MEDICAL_INVESTIGATOR";
 		String tokenAccessClientId = "client";
