@@ -40,6 +40,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -331,7 +332,15 @@ public class UploadAndExportController {
     	ResponseEntity<String> responseEntity = nightingaleSubmissionService.submitRecord(sourceurl, VRDRJson);
 		source.setResponseCode(Integer.toString(responseEntity.getStatusCodeValue()));
 		ObjectMapper mapper = new ObjectMapper();
-		JsonNode nightingaleResponse = mapper.readTree(responseEntity.getBody());
+		JsonNode nightingaleResponse = JsonNodeFactory.instance.objectNode();
+		try {
+			 nightingaleResponse = mapper.readTree(responseEntity.getBody());
+		}
+		catch (JsonParseException e){
+			source.addError(responseEntity.getBody());
+			source.setStatus(Status.error);
+			return source;
+		}
 		//Sometimes real response is embedded in a key name "PostEDRSResult"
 		if(responseEntity.getStatusCode().is2xxSuccessful()) {
 			if(nightingaleResponse.has("PostEDRSResult")) {
