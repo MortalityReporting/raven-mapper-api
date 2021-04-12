@@ -26,9 +26,10 @@ import org.hl7.fhir.r4.model.Meta;
 import org.hl7.fhir.r4.model.Resource;
 
 public class MDIToFhirCMSUtil {
-	public static List<String> dateFormatStrings = Arrays.asList("MM/dd/yy", "MM/dd/yyyy", "dd-M-yy",
-			"dd-M-yyyy", "dd MMMM yy", "dd MMMM yyyy", "dd MMMM yy zzzz", "dd MMMM yyyy zzzz",
-			"E, dd MMM yy","E, dd MMM yyyy","MM-dd-yy","MM-dd-yyyy", "MMMM DD, yy", "MMMM DD, yyyy", "MMddyy", "MMddyyyy", "yy", "yyyy");
+	public static List<String> dateFormatStrings = Arrays.asList("M/d/yy", "M/d/yyyy", "d-M-yy",
+			"Mdyyyy", "Mdyy", "d-M-yyyy", "d MMMM yy", "d MMMM yyyy", "d MMMM yy zzzz",
+			"d MMMM yyyy zzzz", "E, d MMM yy","E, d MMM yyyy","M-d-yy","M-d-yyyy", "MMMM DD, yy",
+			"MMMM DD, yyyy", "yy", "yyyy");
 	public static List<String> timeFormatStrings = Arrays.asList("hh:mm:ss a", "hh:mm a",
 			"hh:mm:ss", "hh:mm","hhmm","hhmmss");
 	public static String ageRegex = "(\\d+)\\s*(year|month|week|day|hour|minute)";
